@@ -10,6 +10,9 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
+    # def products_count(self):
+    #     return self.products.count()
+
 
 class Discount(models.Model):
     discount = models.FloatField()
