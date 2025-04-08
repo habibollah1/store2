@@ -10,14 +10,15 @@ PRODUCT_TAX = 1.09
 
 
 class CategorySerializers(serializers.ModelSerializer):
-    num_of_products = serializers.SerializerMethodField()
+    # num_of_products = serializers.SerializerMethodField()
+    num_of_products = serializers.IntegerField(source='products.count', read_only=True)
 
     class Meta:
         model = Category
         fields = ['id', 'title', 'description', 'top_product', 'num_of_products']
 
-    def get_num_of_products(self, category):
-        return category.products.count()
+    # def get_num_of_products(self, category):
+    #     return category.products.count()
 
 
 class ProductSerializers(serializers.ModelSerializer):
