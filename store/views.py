@@ -5,14 +5,24 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Product, Category, Comment
 from .serializers import ProductSerializers, CategorySerializers, CommentSerializers
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.select_related('category').all()
+    queryset = Product.objects.all()
     serializer_class = ProductSerializers
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['category_id', 'inventory']
+
+    # def get_queryset(self):
+    #     queryset = Product.objects.all()
+    #     category_id_parameter = self.request.query_params.get('category_id')
+    #     if category_id_parameter is not None:
+    #         queryset = queryset.filter(category_id=category_id_parameter)
+    #     return queryset
 
     def get_serializer_context(self):  # صرفا در مواقع استفاده از hyperlink
         return {'request': self.request}
