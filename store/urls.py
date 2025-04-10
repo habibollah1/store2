@@ -1,11 +1,17 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework_nested import routers
 
 from . import views
 
-urlpatterns = [
-    path('products/', views.ProductList.as_view(), name='product_list'),
-    # path('products/', views.product_list, name='product_list'),
-    path('products/<int:pk>/', views.ProductDetail.as_view(), name='product_detail'),
-    path('category/', views.CategoryList.as_view(), name='category_list'),
-    path('category/<int:pk>/', views.CategoryDetail.as_view(), name='category_detail'),
-]
+
+router = routers.DefaultRouter()
+
+router.register('products', views.ProductViewSet, 'product')  # including: product-list | product-detail
+router.register('category', views.CategoryViewSet, basename='category')  # Even if you don't give it a bass-name,
+# it will recognize it based on the model
+
+# my-website/store/products/27/comments/3
+product_routers = routers.NestedDefaultRouter(router, 'products', lookup='product')
+product_routers.register('comments', views.CommentViewSet, basename='comments_product')
+
+urlpatterns = router.urls + product_routers.urls

@@ -3,10 +3,20 @@ from django.utils.text import slugify
 from rest_framework import serializers
 from django.core.validators import MinValueValidator
 
-from store.models import Category, Product
+from store.models import Category, Product, Comment
 
 DOLLARS_TO_RIALS = 900000
 PRODUCT_TAX = 1.09
+
+
+class CommentSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'name', 'body', ]
+
+    def create(self, validated_data):
+        product_id = self.context['product_pk']
+        return Comment.objects.create(product_id=product_id, **validated_data)
 
 
 class CategorySerializers(serializers.ModelSerializer):
