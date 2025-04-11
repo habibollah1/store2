@@ -6,16 +6,22 @@ from django.db.models import Count
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter, SearchFilter
+# from rest_framework.pagination import PageNumberPagination
 
 from .models import Product, Category, Comment
+from .paginations import DefaultPagination
 from .serializers import ProductSerializers, CategorySerializers, CommentSerializers
 
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializers
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['category_id', 'inventory']
+    ordering_fields = ['name', 'price', 'inventory', ]
+    search_fields = ['name', 'category__title']
+    pagination_class = DefaultPagination
 
     # def get_queryset(self):
     #     queryset = Product.objects.all()
