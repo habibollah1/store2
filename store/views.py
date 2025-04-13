@@ -1,17 +1,17 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status, mixins
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, GenericViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
-# from rest_framework.pagination import PageNumberPagination
 
-from .models import Product, Category, Comment
+from .models import Product, Category, Comment, Cart, CartItem
 from .paginations import DefaultPagination
-from .serializers import ProductSerializers, CategorySerializers, CommentSerializers
+from .serializers import ProductSerializers, CategorySerializers, CommentSerializers, CartSerializers, \
+    CartItemSerializer, AddCartItemSerializer, UpdateCartItemSerializer
 
 
 class ProductViewSet(ModelViewSet):
@@ -64,3 +64,34 @@ class CommentViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         return {'product_pk': self.kwargs['product_pk']}
+
+
+class CartItemViewSet(ModelViewSet):
+    # queryset = CartItem.objects.all()
+    # serializer_class = CartItemSerializer
+
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+    def get_queryset(self):
+        cart_pk = self.kwargs['cart_pk']
+        return CartItem.objects.select_related('product').filter(
+            cart_id=cart_pk).all()  # صرفا آیتم های مربوط به آن کارت را نمایش میده
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return AddCartItemSerializer
+        elif self.request.method == 'PATCH':
+            return UpdateCartItemSerializer
+        return CartItemSerializer
+
+    def get_serializer_context(self):
+        return {'cart_pk': self.kwargs['cart_pk']}
+
+
+class CartViewSet(mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  mixins.DestroyModelMixin,
+                  GenericViewSet):
+    queryset = Cart.objects.prefetch_related('items__product').all()
+    serializer_class = CartSerializers
+

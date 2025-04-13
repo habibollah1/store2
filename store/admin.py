@@ -4,7 +4,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.http import urlencode
 
-from .models import Category, Comment, Customer, Order, OrderItem, Product
+from .models import Category, Comment, Customer, Order, OrderItem, Product, Cart, CartItem
 
 
 class InventoryFilter(admin.SimpleListFilter):
@@ -133,3 +133,21 @@ class CustomerAdmin(admin.ModelAdmin):
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ['order', 'product', 'quantity', 'unit_price']
     autocomplete_fields = ['product', ]
+
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    fields = ['id', 'product', 'quantity', ]
+    extra = 0
+    min_num = 1
+
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
+    list_display = ['id', 'product', 'quantity']
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['id', 'created_at']
+    inlines = [CartItemInline]
