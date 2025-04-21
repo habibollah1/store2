@@ -57,7 +57,7 @@ class Customer(models.Model):
 
     class Meta:
         permissions = [
-            ('send private email', 'can send private email to user by the button')
+            ('send_private_email', 'can send private email to user by the button'),
         ]
 
 
