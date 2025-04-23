@@ -3,7 +3,7 @@ from django.utils.text import slugify
 from rest_framework import serializers
 from django.core.validators import MinValueValidator
 
-from store.models import Category, Product, Comment, Cart, CartItem
+from store.models import Category, Product, Comment, Cart, CartItem, Customer, Order, OrderItem
 
 DOLLARS_TO_RIALS = 900000
 PRODUCT_TAX = 1.09
@@ -131,6 +131,13 @@ class CartSerializers(serializers.ModelSerializer):
         return sum([item.quantity * item.product.unit_price for item in cart.items.all()])
         # total = sum(item['item_total'] for item in CartItemSerializer(cart.items.all(), many=True).data)
         # return total
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['id', 'user', 'birth_date', 'phone_number']
+        read_only_fields = ['user']
 
         ####################
     # def update(self, instance, validated_data):

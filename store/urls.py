@@ -3,7 +3,6 @@ from rest_framework_nested import routers
 
 from . import views
 
-
 router = routers.DefaultRouter()
 
 router.register('products', views.ProductViewSet, 'product')  # including: product-list | product-detail
@@ -17,5 +16,7 @@ product_routers.register('comments', views.CommentViewSet, basename='comments_pr
 
 cart_routers = routers.NestedDefaultRouter(router, 'carts', lookup='cart')
 cart_routers.register('items', views.CartItemViewSet, 'cart_items')
+
+router.register('customers', views.CustomerViewSet, 'customers')
 
 urlpatterns = router.urls + product_routers.urls + cart_routers.urls
