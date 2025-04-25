@@ -9,6 +9,7 @@ router.register('products', views.ProductViewSet, 'product')  # including: produ
 router.register('categories', views.CategoryViewSet, basename='category')  # Even if you don't give it a bass-name,
 # it will recognize it based on the model
 router.register('carts', views.CartViewSet)
+router.register('orders', views.OrderViewSet, 'order')
 
 # my-website/store/products/27/comments/3
 product_routers = routers.NestedDefaultRouter(router, 'products', lookup='product')
@@ -18,5 +19,9 @@ cart_routers = routers.NestedDefaultRouter(router, 'carts', lookup='cart')
 cart_routers.register('items', views.CartItemViewSet, 'cart_items')
 
 router.register('customers', views.CustomerViewSet, 'customers')
+
+# order_routers = routers.NestedDefaultRouter(router, 'orders', lookup='order')
+# order_routers.register('items', views.OrderItemViewSet, 'order_items')
+
 
 urlpatterns = router.urls + product_routers.urls + cart_routers.urls
